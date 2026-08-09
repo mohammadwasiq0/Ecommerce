@@ -197,10 +197,4 @@ ZainulHub/
 
 ---
 
-## License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
 *Built with ❤️ for modern e-commerce.*
