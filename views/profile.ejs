@@ -1,0 +1,54 @@
+<%- include('header') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1>My Profile</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="profile-layout">
+    <div class="profile-sidebar">
+      <div class="profile-avatar"><%= profile.name.charAt(0).toUpperCase() %></div>
+      <h2><%= profile.name %></h2>
+      <span class="profile-role"><%= profile.role === 'admin' ? 'Administrator' : 'Customer' %></span>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <strong><%= orderCount %></strong>
+          <span>Orders</span>
+        </div>
+        <div class="profile-stat">
+          <strong><%= new Date(profile.created_at).toLocaleDateString() %></strong>
+          <span>Joined</span>
+        </div>
+      </div>
+    </div>
+    <div class="profile-content">
+      <div class="profile-card">
+        <h3>Account Details</h3>
+        <div class="profile-field">
+          <label>Name</label>
+          <span><%= profile.name %></span>
+        </div>
+        <div class="profile-field">
+          <label>Email</label>
+          <span><%= profile.email %></span>
+        </div>
+        <div class="profile-field">
+          <label>Member Since</label>
+          <span><%= new Date(profile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+        </div>
+      </div>
+      <div class="profile-card">
+        <h3>Quick Links</h3>
+        <div class="profile-links">
+          <a href="/orders" class="profile-link"><i class="fas fa-truck"></i> My Orders <i class="fas fa-arrow-right"></i></a>
+          <a href="/cart" class="profile-link"><i class="fas fa-shopping-bag"></i> Shopping Cart <i class="fas fa-arrow-right"></i></a>
+          <a href="/products" class="profile-link"><i class="fas fa-store"></i> Browse Products <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('footer') %>

@@ -1,0 +1,82 @@
+<%- include('header') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Track Order #<%= order.id %></h1>
+    <p>Real-time order status and timeline</p>
+  </div>
+</div>
+
+<div class="container track-page">
+  <div class="track-card">
+    <div class="track-summary">
+      <div class="track-summary-item">
+        <span>Order ID</span>
+        <strong>#ZNHB-<%= order.id %></strong>
+      </div>
+      <div class="track-summary-item">
+        <span>Total</span>
+        <strong>₹<%= Number(order.total).toLocaleString('en-IN') %></strong>
+      </div>
+      <div class="track-summary-item">
+        <span>Date</span>
+        <strong><%= new Date(order.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) %></strong>
+      </div>
+      <div class="track-summary-item">
+        <span>Payment</span>
+        <strong><span class="badge badge-<%= order.payment_status %>"><%= order.payment_status %></span></strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="track-timeline">
+    <div class="timeline-step <%= ['pending','confirmed','shipped','delivered'].includes(order.status) ? 'active' : '' %>">
+      <div class="timeline-icon"><i class="fas fa-clipboard-list"></i></div>
+      <div class="timeline-content">
+        <strong>Order Placed</strong>
+        <span><%= new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %></span>
+      </div>
+    </div>
+    <div class="timeline-step <%= ['confirmed','shipped','delivered'].includes(order.status) ? 'active' : '' %>">
+      <div class="timeline-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="timeline-content">
+        <strong>Confirmed</strong>
+        <span>Order has been confirmed</span>
+      </div>
+    </div>
+    <div class="timeline-step <%= ['shipped','delivered'].includes(order.status) ? 'active' : '' %>">
+      <div class="timeline-icon"><i class="fas fa-truck"></i></div>
+      <div class="timeline-content">
+        <strong>Shipped</strong>
+        <span>Package is on its way</span>
+      </div>
+    </div>
+    <div class="timeline-step <%= order.status === 'delivered' ? 'active' : '' %>">
+      <div class="timeline-icon"><i class="fas fa-home"></i></div>
+      <div class="timeline-content">
+        <strong>Delivered</strong>
+        <span><%= order.status === 'delivered' ? 'Package delivered successfully' : 'Yet to be delivered' %></span>
+      </div>
+    </div>
+  </div>
+
+  <% if (items.length > 0) { %>
+    <div class="track-items">
+      <h3>Order Items</h3>
+      <div class="track-items-list">
+        <% items.forEach(item => { %>
+          <div class="track-item">
+            <img src="<%= item.image %>" alt="<%= item.name %>" loading="lazy">
+            <div class="track-item-info">
+              <strong><%= item.name %></strong>
+              <span>Qty: <%= item.quantity %> × ₹<%= Number(item.price).toLocaleString('en-IN') %></span>
+            </div>
+            <div class="track-item-total">₹<%= Number(item.price * item.quantity).toLocaleString('en-IN') %></div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<%- include('footer') %>

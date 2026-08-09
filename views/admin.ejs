@@ -1,0 +1,375 @@
+<%- include('header') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+    <p>Manage your store — <span id="realtimeClock"></span></p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="admin-stats">
+    <div class="admin-stat-card gradient-purple">
+      <div class="stat-icon"><i class="fas fa-box"></i></div>
+      <div class="stat-body">
+        <strong><%= stats.products %></strong>
+        <span>Total Products</span>
+        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> Active</div>
+      </div>
+    </div>
+    <div class="admin-stat-card gradient-blue">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-body">
+        <strong><%= stats.users %></strong>
+        <span>Registered Users</span>
+        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> Growing</div>
+      </div>
+    </div>
+    <div class="admin-stat-card gradient-green">
+      <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+      <div class="stat-body">
+        <strong><%= stats.orders %></strong>
+        <span>Total Orders</span>
+        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> +12%</div>
+      </div>
+    </div>
+    <div class="admin-stat-card gradient-orange">
+      <div class="stat-icon"><i class="fas fa-indian-rupee-sign"></i></div>
+      <div class="stat-body">
+        <strong>₹<%= stats.revenue.toLocaleString('en-IN') %></strong>
+        <span>Total Revenue</span>
+        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> +8%</div>
+      </div>
+    </div>
+    <div class="admin-stat-card gradient-red">
+      <div class="stat-icon"><i class="fas fa-clock"></i></div>
+      <div class="stat-body">
+        <strong><%= stats.pendingOrders %></strong>
+        <span>Pending Orders</span>
+        <div class="stat-trend <%= stats.pendingOrders > 0 ? 'down' : 'up' %>"><i class="fas fa-<%= stats.pendingOrders > 0 ? 'exclamation-triangle' : 'check' %>"></i> <%= stats.pendingOrders > 0 ? 'Needs attention' : 'All clear' %></div>
+      </div>
+    </div>
+    <div class="admin-stat-card gradient-blue">
+      <div class="stat-icon"><i class="fas fa-calculator"></i></div>
+      <div class="stat-body">
+        <strong>₹<%= Number(stats.avgOrderValue).toLocaleString('en-IN') %></strong>
+        <span>Avg Order Value</span>
+        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> Per order</div>
+      </div>
+    </div>
+    <div class="admin-stat-card gradient-green">
+      <div class="stat-icon"><i class="fas fa-star"></i></div>
+      <div class="stat-body">
+        <strong><%= stats.totalReviews %></strong>
+        <span>Total Reviews</span>
+        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> Customer feedback</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-toolbar">
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="analytics"><i class="fas fa-chart-line"></i> Analytics</button>
+      <button class="admin-tab" data-tab="products"><i class="fas fa-box"></i> Products</button>
+      <button class="admin-tab" data-tab="orders"><i class="fas fa-truck"></i> Orders</button>
+      <button class="admin-tab" data-tab="add-product"><i class="fas fa-plus-circle"></i> Add Product</button>
+    </div>
+    <div class="admin-toolbar-right">
+      <input type="text" id="adminSearch" class="search-input" placeholder="Search products..." style="width:200px;padding:8px 14px;">
+      <div class="csv-export-group">
+        <a href="/admin/api/export/users" class="btn btn-sm btn-outline"><i class="fas fa-file-csv"></i> Users</a>
+        <a href="/admin/api/export/products" class="btn btn-sm btn-outline"><i class="fas fa-file-csv"></i> Products</a>
+        <a href="/admin/api/export/orders" class="btn btn-sm btn-outline"><i class="fas fa-file-csv"></i> Orders</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-panel" id="panel-products">
+    <div class="admin-table-wrapper">
+      <table class="admin-table" id="productsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price (₹)</th>
+            <th>Stock</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(p => { %>
+            <tr class="product-row" data-name="<%= p.name.toLowerCase() %>">
+              <td class="cell-id">#<%= p.id %></td>
+              <td><img src="<%= p.image %>" class="admin-thumb" loading="lazy"></td>
+              <td class="cell-name"><%= p.name %></td>
+              <td class="cell-price">₹<%= Number(p.price).toLocaleString('en-IN') %></td>
+              <td>
+                <span class="stock-badge <%= p.stock > 10 ? 'stock-high' : (p.stock > 0 ? 'stock-low' : 'stock-out') %>">
+                  <%= p.stock > 0 ? p.stock + ' units' : 'Out' %>
+                </span>
+              </td>
+              <td><span class="badge badge-category"><%= p.category_name || '—' %></span></td>
+              <td><span class="badge <%= p.featured ? 'badge-paid' : 'badge-pending' %>"><%= p.featured ? 'Featured' : 'Standard' %></span></td>
+              <td class="actions-cell">
+                <button class="btn-action edit-product" title="Edit" data-id="<%= p.id %>" data-name="<%= p.name %>" data-price="<%= p.price %>" data-desc="<%= p.description %>" data-stock="<%= p.stock %>" data-category="<%= p.category_id %>" data-featured="<%= p.featured %>"><i class="fas fa-edit"></i></button>
+                <button class="btn-action delete-product" title="Delete" data-id="<%= p.id %>"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <div class="admin-table-footer">
+      <span><%= products.length %> products total</span>
+    </div>
+  </div>
+
+  <div class="admin-panel" id="panel-add-product">
+    <div class="admin-form-card">
+      <h3><i class="fas fa-plus-circle" style="color:var(--primary);"></i> Add New Product</h3>
+      <p style="color:var(--muted);margin-bottom:24px;">Fill in the details below to add a new product to your catalog.</p>
+      <form id="addProductForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" name="name" placeholder="e.g. Wireless Headphones" required>
+          </div>
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" step="1" name="price" placeholder="e.g. 10999" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" rows="3" placeholder="Describe your product..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Image URL</label>
+            <input type="text" name="image" value="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500">
+          </div>
+          <div class="form-group">
+            <label>Stock Quantity</label>
+            <input type="number" name="stock" value="10" min="0">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select name="category_id">
+              <% categories.forEach(c => { %><option value="<%= c.id %>"><%= c.name %></option><% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Featured Product</label>
+            <select name="featured">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="margin-top:8px;">
+          <i class="fas fa-plus"></i> Add Product
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-panel active" id="panel-analytics">
+    <div class="analytics-grid">
+      <div class="analytics-card">
+        <h3><i class="fas fa-chart-bar"></i> Revenue Trend (6 Months)</h3>
+        <canvas id="revenueChart" height="200"></canvas>
+      </div>
+      <div class="analytics-card">
+        <h3><i class="fas fa-trophy"></i> Top Selling Products</h3>
+        <div class="top-products-list">
+          <% topProducts.forEach((p, i) => { %>
+            <div class="top-product-item">
+              <span class="top-rank">#<%= i + 1 %></span>
+              <img src="<%= p.image %>" alt="<%= p.name %>" loading="lazy">
+              <div class="top-product-info">
+                <strong><%= p.name %></strong>
+                <span>Sold: <%= p.total_sold %> units</span>
+              </div>
+              <span class="top-revenue">₹<%= Number(p.price * p.total_sold).toLocaleString('en-IN') %></span>
+            </div>
+          <% }) %>
+          <% if (topProducts.length === 0) { %><p style="color:var(--muted);padding:20px;">No sales data yet</p><% } %>
+        </div>
+      </div>
+      <div class="analytics-card">
+        <h3><i class="fas fa-pie-chart"></i> Category Distribution</h3>
+        <canvas id="categoryChart" height="180"></canvas>
+      </div>
+      <div class="analytics-card">
+        <h3><i class="fas fa-sync-alt"></i> Order Status Breakdown</h3>
+        <canvas id="statusChart" height="180"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div class="modal-overlay" id="editModal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-edit"></i> Edit Product</h3>
+        <button class="modal-close" id="editModalClose">&times;</button>
+      </div>
+      <form id="editProductForm">
+        <input type="hidden" name="id" id="editId">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" name="name" id="editName" required>
+          </div>
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" step="1" name="price" id="editPrice" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" id="editDesc" rows="3"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stock Quantity</label>
+            <input type="number" name="stock" id="editStock" min="0">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select name="category_id" id="editCategory">
+              <% categories.forEach(c => { %><option value="<%= c.id %>"><%= c.name %></option><% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Featured</label>
+          <select name="featured" id="editFeatured">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" id="editCancelBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-panel" id="panel-orders">
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Date</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentOrders.forEach(o => { %>
+            <tr>
+              <td class="cell-id">#<%= o.id %></td>
+              <td><%= o.user_name %></td>
+              <td class="cell-price">₹<%= Number(o.total).toLocaleString('en-IN') %></td>
+              <td>
+                <span class="badge badge-<%= o.status %>">
+                  <i class="fas fa-<%= o.status === 'pending' ? 'clock' : (o.status === 'confirmed' ? 'check' : (o.status === 'shipped' ? 'truck' : (o.status === 'delivered' ? 'check-circle' : 'times'))) %>"></i>
+                  <%= o.status.charAt(0).toUpperCase() + o.status.slice(1) %>
+                </span>
+              </td>
+              <td><span class="badge badge-<%= o.payment_status %>"><%= o.payment_status === 'paid' ? 'Paid' : 'Unpaid' %></span></td>
+              <td class="cell-date"><%= new Date(o.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %></td>
+              <td>
+                <select class="order-status-select" data-order-id="<%= o.id %>">
+                  <option value="pending" <%= o.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                  <option value="confirmed" <%= o.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                  <option value="shipped" <%= o.status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                  <option value="delivered" <%= o.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                  <option value="cancelled" <%= o.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                </select>
+              </td>
+            </tr>
+          <% }) %>
+          <% if (recentOrders.length === 0) { %>
+            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">No orders yet</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const api = async (url, opts = {}) => { const r = await fetch(url, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts }); return r.json(); };
+
+  /* Revenue Chart */
+  const revenueCanvas = document.getElementById('revenueChart');
+  if (revenueCanvas) {
+    api('/admin/api/revenue-chart').then(chartData => {
+      const ctx = revenueCanvas.getContext('2d');
+      const w = revenueCanvas.parentElement.offsetWidth;
+      revenueCanvas.width = w; revenueCanvas.height = 200;
+      const months = chartData.map(d => { const p = d.month.split('-'); const ms = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return ms[parseInt(p[1])] + ' ' + p[0]; });
+      const revenues = chartData.map(d => d.revenue);
+      const max = Math.max(...revenues, 1);
+      const pad = 40, chartW = w - pad * 2, chartH = 160, barW = Math.min(40, chartW / months.length * 0.6), gap = chartW / months.length;
+      ctx.clearRect(0, 0, w, 200);
+      for (let i = 0; i <= 4; i++) { const y = pad + chartH - (chartH * i / 4); ctx.beginPath(); ctx.strokeStyle = '#e8edf5'; ctx.lineWidth = 1; ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke(); ctx.fillStyle = '#94a3b8'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'right'; ctx.fillText('\u20B9' + Math.round(max * i / 4).toLocaleString('en-IN'), pad - 8, y + 4); }
+      months.forEach((m, i) => {
+        const x = pad + i * gap + (gap - barW) / 2, h = (revenues[i] / max) * chartH, y = pad + chartH - h;
+        const grad = ctx.createLinearGradient(x, y, x, pad + chartH); grad.addColorStop(0, '#6366f1'); grad.addColorStop(1, '#a5b4fc');
+        ctx.fillStyle = grad; ctx.beginPath(); ctx.roundRect(x, y, barW, h, [4,4,0,0]); ctx.fill();
+        ctx.fillStyle = '#94a3b8'; ctx.font = '9px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(m, x + barW / 2, pad + chartH + 18);
+      });
+      ctx.beginPath(); ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2;
+      months.forEach((m, i) => { const x = pad + i * gap + gap / 2, y = pad + chartH - (revenues[i] / max) * chartH; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }); ctx.stroke();
+      months.forEach((m, i) => { const x = pad + i * gap + gap / 2, y = pad + chartH - (revenues[i] / max) * chartH; ctx.beginPath(); ctx.fillStyle = '#6366f1'; ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.fillStyle = '#fff'; ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fill(); });
+    });
+  }
+
+  /* Category Chart */
+  const categoryCanvas = document.getElementById('categoryChart');
+  if (categoryCanvas) {
+    const catData = <%- JSON.stringify(catDist) %>;
+    const ctx = categoryCanvas.getContext('2d');
+    const w = categoryCanvas.parentElement.offsetWidth;
+    categoryCanvas.width = w; categoryCanvas.height = 180;
+    const colors = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6'];
+    const total = catData.reduce((s, c) => s + c.count, 0);
+    let start = -Math.PI / 2;
+    const cx = w * 0.35, cy = 90, rad = Math.min(cx - 20, cy - 20, 70);
+    catData.forEach((c, i) => { const angle = (c.count / total) * Math.PI * 2; ctx.beginPath(); ctx.fillStyle = colors[i % colors.length]; ctx.moveTo(cx, cy); ctx.arc(cx, cy, rad, start, start + angle); ctx.closePath(); ctx.fill(); start += angle; });
+    let ly = 20;
+    catData.forEach((c, i) => { const lx = w * 0.6; ctx.fillStyle = colors[i % colors.length]; ctx.fillRect(lx, ly, 14, 14); ctx.fillStyle = '#475569'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'left'; ctx.fillText(c.name + ' (' + c.count + ')', lx + 20, ly + 12); ly += 28; });
+  }
+
+  /* Status Chart */
+  const statusCanvas = document.getElementById('statusChart');
+  if (statusCanvas) {
+    const statusData = <%- JSON.stringify(ordersByStatus) %>;
+    const ctx = statusCanvas.getContext('2d');
+    const w = statusCanvas.parentElement.offsetWidth;
+    statusCanvas.width = w; statusCanvas.height = 180;
+    const colors = { 'pending': '#f59e0b', 'confirmed': '#6366f1', 'shipped': '#0ea5e9', 'delivered': '#10b981', 'cancelled': '#ef4444' };
+    const total = statusData.reduce((s, c) => s + c.count, 0);
+    let start = -Math.PI / 2;
+    const cx = w * 0.35, cy = 90, rad = Math.min(cx - 20, cy - 20, 70);
+    statusData.forEach(c => { const angle = (c.count / total) * Math.PI * 2; ctx.beginPath(); ctx.fillStyle = colors[c.status] || '#94a3b8'; ctx.moveTo(cx, cy); ctx.arc(cx, cy, rad, start, start + angle); ctx.closePath(); ctx.fill(); start += angle; });
+    let ly = 20;
+    statusData.forEach(c => { const lx = w * 0.6; ctx.fillStyle = colors[c.status] || '#94a3b8'; ctx.fillRect(lx, ly, 14, 14); ctx.fillStyle = '#475569'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'left'; ctx.fillText(c.status.charAt(0).toUpperCase() + c.status.slice(1) + ' (' + c.count + ')', lx + 20, ly + 12); ly += 28; });
+  }
+})();
+</script>
+<%- include('footer') %>

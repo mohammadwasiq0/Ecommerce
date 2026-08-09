@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'ZainulHub' %></title>
+  <meta name="description" content="ZainulHub - Your premium online shopping destination. Discover amazing products at great prices.">
+  <meta name="keywords" content="ecommerce, shopping, online store, electronics, fashion, home goods">
+  <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'ZainulHub' %>">
+  <meta property="og:description" content="ZainulHub - Your premium online shopping destination.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<%= process.env.BASE_URL || 'http://localhost:3000' %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="nav-logo">
+        <i class="fas fa-cube"></i>
+        <span>ZainulHub</span>
+      </a>
+      <div class="nav-search">
+        <form action="/products" method="GET" class="search-form">
+          <input type="text" name="search" placeholder="Search products..." class="search-input" value="<%= typeof search !== 'undefined' ? search : '' %>">
+          <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+      <div class="nav-links">
+        <a href="/" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="/products" class="nav-link"><i class="fas fa-store"></i><span>Shop</span></a>
+        <a href="/cart" class="nav-link cart-link">
+          <i class="fas fa-shopping-bag"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </a>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <div class="nav-dropdown" id="userDropdown">
+            <a href="javascript:void(0)" class="nav-link dropdown-toggle" id="dropdownToggle">
+              <i class="fas fa-user"></i>
+              <span><%= user.name %></span>
+              <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="dropdown-menu" id="dropdownMenu">
+              <a href="/profile"><i class="fas fa-id-card"></i> Profile</a>
+              <a href="/orders"><i class="fas fa-truck"></i> Orders</a>
+              <% if (user.role === 'admin') { %>
+                <a href="/admin"><i class="fas fa-shield-alt"></i> Admin</a>
+              <% } %>
+              <hr>
+              <a href="javascript:void(0)" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+            </div>
+          </div>
+        <% } else { %>
+          <a href="/login" class="nav-link"><i class="fas fa-sign-in-alt"></i><span>Sign In</span></a>
+          <a href="/signup" class="nav-btn">Get Started</a>
+        <% } %>
+      </div>
+      <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/"><i class="fas fa-home"></i> Home</a>
+    <a href="/products"><i class="fas fa-store"></i> Shop</a>
+    <a href="/cart"><i class="fas fa-shopping-bag"></i> Cart <span class="cart-badge" id="mobileCartBadge">0</span></a>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+      <a href="/orders"><i class="fas fa-truck"></i> Orders</a>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin"><i class="fas fa-shield-alt"></i> Admin</a>
+      <% } %>
+      <a href="#" id="mobileLogout"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+    <% } else { %>
+      <a href="/login"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+      <a href="/signup"><i class="fas fa-user-plus"></i> Create Account</a>
+    <% } %>
+  </div>
+  <script>var userLoggedIn = <%= typeof user !== 'undefined' && user ? 'true' : 'false' %>;</script>
+<main class="main-content">

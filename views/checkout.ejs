@@ -1,0 +1,83 @@
+<%- include('header') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Checkout</h1>
+    <p>Complete your purchase securely</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="checkout-layout">
+    <div class="checkout-form-section">
+      <div class="checkout-card">
+        <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
+        <div class="form-group">
+          <label for="address">Address</label>
+          <input type="text" id="address" placeholder="123, Main Street" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city" placeholder="Mumbai" required>
+          </div>
+          <div class="form-group">
+            <label for="zip">PIN Code</label>
+            <input type="text" id="zip" placeholder="400001" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="checkout-card">
+        <h3><i class="fas fa-credit-card"></i> Payment</h3>
+        <div id="payment-element">
+          <div class="payment-options">
+            <label class="payment-option">
+              <input type="radio" name="payment" value="card" checked>
+              <i class="fas fa-credit-card"></i> Credit / Debit Card
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="demo">
+              <i class="fas fa-wallet"></i> Demo Payment (Test)
+            </label>
+          </div>
+          <div id="card-element" class="card-input-container">
+            <input type="text" id="cardNumber" placeholder="Card Number: 4242 4242 4242 4242" class="card-input">
+            <div class="card-row">
+              <input type="text" id="cardExpiry" placeholder="MM/YY" class="card-input half">
+              <input type="text" id="cardCvc" placeholder="CVC" class="card-input half">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checkout-sidebar">
+      <div class="checkout-card">
+        <h3>Order Summary</h3>
+        <div class="checkout-items">
+          <% items.forEach(item => { %>
+            <div class="checkout-item">
+              <img src="<%= item.image %>" alt="<%= item.name %>">
+              <div class="checkout-item-info">
+                <span><%= item.name %></span>
+                <span>Qty: <%= item.quantity %></span>
+              </div>
+              <span>₹<%= Number(item.price * item.quantity).toLocaleString('en-IN') %></span>
+            </div>
+          <% }) %>
+        </div>
+        <div class="summary-row"><span>Subtotal</span><span>₹<%= Number(total).toLocaleString('en-IN') %></span></div>
+        <div class="summary-row"><span>Shipping</span><span><%= total >= 2999 ? 'Free' : '₹199' %></span></div>
+        <div class="summary-row total"><span>Total</span><span id="checkoutTotal">₹<%= Number(total + (total >= 2999 ? 0 : 199)).toLocaleString('en-IN') %></span></div>
+        <button class="btn btn-primary btn-block btn-lg" id="placeOrderBtn">
+          <i class="fas fa-lock"></i> Place Order — ₹<%= Number(total + (total >= 2999 ? 0 : 199)).toLocaleString('en-IN') %>
+        </button>
+        <div id="checkoutError" class="form-error"></div>
+        <div id="checkoutSuccess" class="form-success"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('footer') %>

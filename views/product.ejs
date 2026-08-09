@@ -1,0 +1,91 @@
+<%- include('header') %>
+
+<div class="container product-detail-page">
+  <nav class="breadcrumb">
+    <a href="/">Home</a> / <a href="/products">Products</a> / <span><%= product.name %></span>
+  </nav>
+
+  <div class="product-detail">
+    <div class="product-detail-image">
+      <img src="<%= product.image %>" alt="<%= product.name %>">
+    </div>
+    <div class="product-detail-info">
+      <span class="product-category"><%= product.category_name %></span>
+      <h1><%= product.name %></h1>
+      <div class="product-price-lg">₹<%= Number(product.price).toLocaleString('en-IN') %></div>
+      <p class="product-description"><%= product.description %></p>
+      <div class="product-meta">
+        <div class="meta-item"><i class="fas fa-box"></i> Stock: <strong><%= product.stock > 0 ? product.stock + ' available' : 'Out of Stock' %></strong></div>
+        <div class="meta-item"><i class="fas fa-tag"></i> Category: <strong><%= product.category_name %></strong></div>
+      </div>
+      <div class="product-actions">
+        <% if (product.stock > 0) { %>
+          <div class="quantity-selector">
+            <button type="button" class="qty-btn" id="qtyMinus">-</button>
+            <input type="number" id="quantity" value="1" min="1" max="<%= product.stock %>">
+            <button type="button" class="qty-btn" id="qtyPlus">+</button>
+          </div>
+          <button class="btn btn-primary btn-lg add-cart-btn" data-product-id="<%= product.id %>">
+            <i class="fas fa-shopping-bag"></i> Add to Cart
+          </button>
+        <% } else { %>
+          <button class="btn btn-disabled btn-lg" disabled>Out of Stock</button>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <section class="section reviews-section">
+    <div class="section-header">
+      <h2>Customer Reviews</h2>
+    </div>
+    <div class="reviews-container" data-product-id="<%= product.id %>">
+      <div class="reviews-list" id="reviewsList"></div>
+      <div class="review-form-card">
+        <h3><i class="fas fa-star"></i> Write a Review</h3>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <form id="reviewForm">
+            <div class="star-rating">
+              <span data-rating="1"><i class="far fa-star"></i></span>
+              <span data-rating="2"><i class="far fa-star"></i></span>
+              <span data-rating="3"><i class="far fa-star"></i></span>
+              <span data-rating="4"><i class="far fa-star"></i></span>
+              <span data-rating="5"><i class="far fa-star"></i></span>
+            </div>
+            <input type="hidden" name="rating" id="reviewRating" value="5">
+            <textarea name="comment" rows="3" placeholder="Share your thoughts about this product..."></textarea>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Review</button>
+          </form>
+        <% } else { %>
+          <p style="color:var(--muted);"><a href="/login" style="color:var(--primary);font-weight:600;">Sign in</a> to write a review.</p>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <% if (related.length > 0) { %>
+    <section class="section">
+      <div class="section-header">
+        <h2>Related Products</h2>
+      </div>
+      <div class="products-grid">
+        <% related.forEach(rel => { %>
+          <div class="product-card" data-id="<%= rel.id %>">
+            <div class="product-image">
+              <img src="<%= rel.image %>" alt="<%= rel.name %>" loading="lazy">
+              <button class="add-cart-btn" data-product-id="<%= rel.id %>">
+                <i class="fas fa-shopping-bag"></i> Add to Cart
+              </button>
+            </div>
+            <div class="product-info">
+              <h3><a href="/products/<%= rel.slug %>"><%= rel.name %></a></h3>
+              <span class="product-price">₹<%= Number(rel.price).toLocaleString('en-IN') %></span>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+</div>
+
+<%- include('footer') %>

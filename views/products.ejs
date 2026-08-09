@@ -1,0 +1,58 @@
+<%- include('header') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Shop All Products</h1>
+    <p>Discover our complete collection</p>
+    <% if (search) { %><p style="margin-top:0.5rem;color:var(--muted);">Results for "<%= search %>"</p><% } %>
+  </div>
+</div>
+
+<div class="container">
+  <div class="shop-layout">
+    <aside class="shop-sidebar">
+      <div class="sidebar-section">
+        <h3>Categories</h3>
+        <a href="/products" class="filter-link <%= !selectedCategory ? 'active' : '' %>">All Categories</a>
+        <% categories.forEach(cat => { %>
+          <a href="/products?category=<%= cat.slug %>" class="filter-link <%= selectedCategory === cat.slug ? 'active' : '' %>"><%= cat.name %></a>
+        <% }) %>
+      </div>
+    </aside>
+    <div class="shop-content">
+      <% if (products.length === 0) { %>
+        <div class="empty-state">
+          <i class="fas fa-search"></i>
+          <h3>No products found</h3>
+          <p>Try adjusting your search or filter criteria</p>
+          <a href="/products" class="btn btn-primary">Clear Filters</a>
+        </div>
+      <% } else { %>
+        <div class="products-count"><%= products.length %> product(s) found</div>
+        <div class="products-grid">
+          <% products.forEach(product => { %>
+            <div class="product-card" data-id="<%= product.id %>">
+              <div class="product-image">
+                <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                <% if (product.featured) { %><span class="product-badge">Featured</span><% } %>
+                <button class="add-cart-btn" data-product-id="<%= product.id %>">
+                  <i class="fas fa-shopping-bag"></i> Add to Cart
+                </button>
+              </div>
+              <div class="product-info">
+                <span class="product-category"><%= product.category_name %></span>
+                <h3><a href="/products/<%= product.slug %>"><%= product.name %></a></h3>
+                <div class="product-price-row">
+                  <span class="product-price">₹<%= Number(product.price).toLocaleString('en-IN') %></span>
+                  <span class="<%= product.stock > 0 ? 'in-stock' : 'out-of-stock' %>"><%= product.stock > 0 ? 'In Stock' : 'Out of Stock' %></span>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('footer') %>

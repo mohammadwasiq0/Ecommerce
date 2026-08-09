@@ -1,0 +1,127 @@
+<%- include('header') %>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <span class="hero-badge">New Collection 2024</span>
+      <h1>Discover Premium <span class="gradient-text">Shopping</span> Experience</h1>
+      <p>Explore our curated collection of high-quality products. From electronics to fashion, find everything you need in one place.</p>
+      <div class="hero-actions">
+        <a href="/products" class="btn btn-primary btn-lg">Shop Now <i class="fas fa-arrow-right"></i></a>
+        <a href="/products?featured=true" class="btn btn-outline btn-lg">Featured Items</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong>10K+</strong><span>Products</span></div>
+        <div class="stat"><strong>50K+</strong><span>Happy Customers</span></div>
+        <div class="stat"><strong>99%</strong><span>Satisfaction</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card floating">
+        <i class="fas fa-headphones"></i>
+        <div>
+          <strong>Wireless Headphones</strong>
+          <span>₹10,999</span>
+        </div>
+      </div>
+      <div class="hero-card floating-delay">
+        <i class="fas fa-clock"></i>
+        <div>
+          <strong>Smart Watch Pro</strong>
+          <span>₹19,999</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section categories-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Shop by Category</h2>
+      <p>Browse our curated categories to find exactly what you need</p>
+    </div>
+    <div class="categories-grid">
+      <% categories.forEach(cat => { %>
+        <a href="/products?category=<%= cat.slug %>" class="category-card">
+          <div class="category-icon">
+            <% if (cat.slug === 'electronics') { %><i class="fas fa-laptop"></i>
+            <% } else if (cat.slug === 'clothing') { %><i class="fas fa-tshirt"></i>
+            <% } else if (cat.slug === 'home-garden') { %><i class="fas fa-home"></i>
+            <% } else if (cat.slug === 'books') { %><i class="fas fa-book"></i>
+            <% } else if (cat.slug === 'sports') { %><i class="fas fa-running"></i>
+            <% } else { %><i class="fas fa-tag"></i><% } %>
+          </div>
+          <h3><%= cat.name %></h3>
+          <span>Explore <i class="fas fa-arrow-right"></i></span>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="section featured-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Featured Products</h2>
+      <p>Handpicked favorites just for you</p>
+    </div>
+    <div class="products-grid">
+      <% featured.forEach(product => { %>
+        <div class="product-card" data-id="<%= product.id %>">
+          <div class="product-image">
+            <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+            <% if (product.featured) { %><span class="product-badge">Featured</span><% } %>
+            <button class="add-cart-btn" data-product-id="<%= product.id %>">
+              <i class="fas fa-shopping-bag"></i> Add to Cart
+            </button>
+          </div>
+          <div class="product-info">
+            <span class="product-category"><%= product.category_name %></span>
+            <h3><a href="/products/<%= product.slug %>"><%= product.name %></a></h3>
+            <div class="product-price-row">
+              <span class="product-price">₹<%= Number(product.price).toLocaleString('en-IN') %></span>
+              <% if (product.stock > 0) { %>
+                <span class="in-stock">In Stock</span>
+              <% } else { %>
+                <span class="out-of-stock">Out of Stock</span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+    <div class="section-footer">
+      <a href="/products" class="btn btn-primary">View All Products <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<section class="section features-section">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <i class="fas fa-truck"></i>
+        <h3>Free Shipping</h3>
+        <p>Free delivery on all orders over ₹2,999</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-shield-alt"></i>
+        <h3>Secure Payment</h3>
+        <p>256-bit SSL encrypted checkout</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-undo"></i>
+        <h3>Easy Returns</h3>
+        <p>30-day hassle-free return policy</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-headset"></i>
+        <h3>24/7 Support</h3>
+        <p>AI-powered chat support always available</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('footer') %>

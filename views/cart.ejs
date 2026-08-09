@@ -1,0 +1,71 @@
+<%- include('header') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Shopping Cart</h1>
+    <p><span id="cartCount"><%= items.length %></span> item(s) in your cart</p>
+  </div>
+</div>
+
+<div class="container">
+  <% if (items.length === 0) { %>
+    <div class="empty-state">
+      <i class="fas fa-shopping-bag"></i>
+      <h3>Your cart is empty</h3>
+      <p>Start shopping and add some items to your cart!</p>
+      <a href="/products" class="btn btn-primary">Browse Products</a>
+    </div>
+  <% } else { %>
+    <div class="cart-layout">
+      <div class="cart-items">
+        <div class="cart-header">
+          <span>Product</span>
+          <span>Price</span>
+          <span>Quantity</span>
+          <span>Total</span>
+          <span></span>
+        </div>
+        <% items.forEach(item => { %>
+          <div class="cart-item" data-cart-id="<%= item.id %>">
+            <div class="cart-item-info">
+              <img src="<%= item.image %>" alt="<%= item.name %>">
+              <div>
+                <h3><%= item.name %></h3>
+              </div>
+            </div>
+            <div class="cart-item-price">₹<%= Number(item.price).toLocaleString('en-IN') %></div>
+            <div class="cart-item-qty">
+              <div class="quantity-selector">
+                <button class="qty-btn cart-qty-btn" data-action="minus" data-cart-id="<%= item.id %>">-</button>
+                <input type="number" value="<%= item.quantity %>" min="1" class="cart-qty-input" data-cart-id="<%= item.id %>">
+                <button class="qty-btn cart-qty-btn" data-action="plus" data-cart-id="<%= item.id %>">+</button>
+              </div>
+            </div>
+            <div class="cart-item-total">₹<%= Number(item.price * item.quantity).toLocaleString('en-IN') %></div>
+            <button class="cart-remove" data-cart-id="<%= item.id %>"><i class="fas fa-trash"></i></button>
+          </div>
+        <% }) %>
+      </div>
+      <div class="cart-summary">
+        <h3>Order Summary</h3>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotal">₹<%= Number(total).toLocaleString('en-IN') %></span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span><%= total >= 2999 ? 'Free' : '₹199' %></span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span id="cartTotal">₹<%= Number(total + (total >= 2999 ? 0 : 199)).toLocaleString('en-IN') %></span>
+        </div>
+        <a href="/checkout" class="btn btn-primary btn-block">Proceed to Checkout <i class="fas fa-arrow-right"></i></a>
+        <a href="/products" class="btn btn-outline btn-block">Continue Shopping</a>
+        <button id="clearCartBtn" class="btn btn-text btn-block">Clear Cart</button>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<%- include('footer') %>
